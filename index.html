@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mapa con Leaflet y PostGIS</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>#map { height: 100vh; }</style>
+</head>
+<body>
+<button onclick="cargarPuntos('Primaria')">Primaria</button>
+<button onclick="cargarPuntos('Secundaria')">Secundaria</button>
+<button onclick="cargarPuntos('Preparatoria')">Preparatoria</button>
+<button onclick="cargarPuntos('Universidad')">Universidad</button>
+<button onclick="cargarPoligonos()">Mostrar Colonias</button>
+
+
+  <div id="map"></div>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+
+    const map = L.map('map').setView([21.13219986874396, -101.6856768646196], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+    const puntosLayer = L.layerGroup().addTo(map);
+    const poligonosLayer = L.layerGroup().addTo(map);
+
+    function cargarPuntos(tipo){
+    fetch(`http://localhost:3000/puntos?tipo=${tipo}`)
+      .then(res => res.json())
+      .then(data => {
+        puntosLayer.clearLayers(); // Elimina puntos anteriores
+        L.geoJSON(data, {
+          onEachFeature: (feature, layer) => {
+            layer.bindPopup(feature.properties.nombre);
+          }
+        }).addTo(puntosLayer);
+      });
+    }
+
+  function cargarPoligonos() {
+    fetch('http://localhost:3000/poligonos')
+      .then(res => res.json())
+      .then(data => {
+        poligonosLayer.clearLayers(); // Limpia el mapa
+        L.geoJSON(data, {
+          style: feature => ({
+            color: feature.properties.color,
+            fillColor: feature.properties.color,
+            fillOpacity: 0.4,
+            weight: 2
+          }),
+          onEachFeature: (feature, layer) => {
+            layer.bindPopup(feature.properties.nombre);
+          }
+        }).addTo(poligonosLayer);
+      });
+  }
+
+
+
+      
+  </script>
+</body>
+</html>
