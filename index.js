@@ -9,6 +9,7 @@ let coloniaSeleccionada = null; //Ultima colonia selecicona
 let escuelaSeleccionada = null; //Ultima escuela seleccionada
 let poligonosGeoJSON = []; //   features cargados
 let clusteringActivo = false;
+let valorInput = 0
 
 
 function seleccionarTipo() {
@@ -153,59 +154,59 @@ function cerrarInfo() {
 
 //SACAR UBICACION DEL USUARIO
 function mostrarMiUbicacion() {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      function (position) {
-        const lat = position.coords.latitude;
-        const lon = position.coords.longitude;
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+        function (position) {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
 
-        const iconoUsuario = L.icon({
-          iconUrl: 'https://maps.gstatic.com/mapfiles/ms2/micons/man.png',
-          iconSize: [32, 32],
-          iconAnchor: [16, 32],
-          popupAnchor: [0, -30]
-        });
+            const iconoUsuario = L.icon({
+                iconUrl: 'https://maps.gstatic.com/mapfiles/ms2/micons/man.png',
+                iconSize: [32, 32],
+                iconAnchor: [16, 32],
+                popupAnchor: [0, -30]
+            });
 
-        const marcadorUsuario = L.marker([lat, lon], { icon: iconoUsuario }).addTo(map);
-        marcadorUsuario.bindPopup("Estás aquí").openPopup();
+            const marcadorUsuario = L.marker([lat, lon], { icon: iconoUsuario }).addTo(map);
+            marcadorUsuario.bindPopup("Estás aquí").openPopup();
 
-      },
-      function (error) {
-        console.error("No se pudo obtener la ubicación:", error);
-        alert("No se pudo obtener tu ubicación.");
-      }
-    );
-  } else {
-    alert("Tu navegador no soporta geolocalización.");
-  }
+        },
+        function (error) {
+            console.error("No se pudo obtener la ubicación:", error);
+            alert("No se pudo obtener tu ubicación.");
+        }
+        );
+    } 
+    else {
+        alert("Tu navegador no soporta geolocalización.");
+    }
 }
 
 // FUNCION PARA CALCULAR DISTANCIA DE ESCUELA HASTA UBIVAVION
 function calcularDistanciaCasa() {
-  if (!escuelaSeleccionada) {
-    alert("Primero selecciona una escuela.");
-    return;
-  }
-
-  if (!navigator.geolocation) {
-    alert("Tu navegador no soporta geolocalización.");
-    return;
-  }
-
-  navigator.geolocation.getCurrentPosition(
-    position => {
-      const userPoint = turf.point([position.coords.longitude, position.coords.latitude]);
-      const escuelaPoint = turf.point(escuelaSeleccionada.geometry.coordinates);
-
-      const distancia = turf.distance(userPoint, escuelaPoint, { units: 'kilometers' });
-
-      document.getElementById('infoDistancia').textContent = `Distancia desde tu ubicación: ${distancia.toFixed(2)} km`;
-    },
-    error => {
-      console.error(error);
-      document.getElementById('infoDistancia').textContent = 'No se pudo obtener tu ubicación.';
+    if (!escuelaSeleccionada) {
+        alert("Primero selecciona una escuela.");
+        return;
     }
-  );
+
+    if (!navigator.geolocation) {
+        alert("Tu navegador no soporta geolocalización.");
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+        position => {
+            const userPoint = turf.point([position.coords.longitude, position.coords.latitude]);
+            const escuelaPoint = turf.point(escuelaSeleccionada.geometry.coordinates);
+            const distancia = turf.distance(userPoint, escuelaPoint, { units: 'kilometers' });
+
+            document.getElementById('infoDistancia').textContent = `Distancia desde tu ubicación: ${distancia.toFixed(2)} km`;
+        },
+        error => {
+            console.error(error);
+            document.getElementById('infoDistancia').textContent = 'No se pudo obtener tu ubicación.';
+        }
+    );
 }
 
 function resaltarIntersecciones() {
@@ -262,7 +263,7 @@ function contarEscuelasEnColonia() {
     fetch('http://localhost:3000/puntos')
         .then(res => res.json())
         .then(data => {
-            const escuelas = data.features; // 👈 Asegúrate de acceder a .features
+            const escuelas = data.features; 
 
             escuelas.forEach(escuela => {
                 const escuelaPoint = turf.point(escuela.geometry.coordinates);
@@ -285,8 +286,11 @@ function contarEscuelasEnRadio() {
         return;
     }
 
+    const metros = parseFloat(document.getElementById('radioInput').value) || 0;
+    document.getElementById('radioLabel').textContent = metros;
+
     const centro = turf.point(escuelaSeleccionada.geometry.coordinates);
-    const radio = 0.5; // 0.5 km = 500 metros
+    const radio = metros / 1000; // 0.5 km = 500 metros
     const circuloBuffer = turf.buffer(centro, radio, { units: 'kilometers' });
 
     fetch('http://localhost:3000/puntos')
@@ -319,3 +323,14 @@ function contarEscuelasEnRadio() {
         });
 }
 
+function calcularAreaColonia() {
+    if (!coloniaSeleccionada) {
+        alert("Primero selecciona una colonia.");
+        return;
+    }
+
+    const area = turf.area(coloniaSeleccionada); 
+    const areaFormateada = area.toLocaleString(undefined, { maximumFractionDigits: 2 });
+
+    document.getElementById('infoArea').innerHTML = `Área: <strong>${areaFormateada} m²</strong>`;
+}

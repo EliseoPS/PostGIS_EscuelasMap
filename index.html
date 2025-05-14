@@ -145,14 +145,26 @@
 <div class="mx-5">
   <div id="map"></div>
 </div>
-
-<button class="btn btn-outline-info" onclick="resaltarIntersecciones()">Resaltar Intersecciones</button>
-<button class="btn btn-outline-info" onclick="toggleClustering(this)">Activar clustering</button>
-<button class="btn btn-outline-info" onclick="contarEscuelasEnColonia()">Contar Escuelas en Colonia</button>
-<button class="btn btn-outline-danger" onclick="contarEscuelasEnRadio()">Escuelas en 500m</button>
-
-
-
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <button class="btn btn-outline-info" onclick="resaltarIntersecciones()">Resaltar Intersecciones</button>
+      <button class="btn btn-outline-warning" onclick="toggleClustering(this)">Activar clustering</button>
+      <button class="btn btn-outline-success" onclick="contarEscuelasEnColonia()">Contar Escuelas en Colonia</button>
+      <div class="row align-items-center">
+        <div class="col-auto">
+          <input type="number" id="radioInput" class="form-control" value="500" min="0" max="10000">
+        </div>
+        <div class="col">
+          <button class="btn btn-outline-danger w-100" onclick="contarEscuelasEnRadio()">
+            Buscar escuelas en un radio de <span id="radioLabel">500</span>m
+          </button>
+        </div>
+      </div>
+      <button class="btn btn-outline-secondary" onclick="calcularAreaColonia()">Calcular área de Colonia</button>
+    </div>
+  </div>
+</div>
 
 <div class="container">
     <div class="row">
@@ -161,18 +173,15 @@
             <div class="escala-colores">
                 <p class="mb-1"><strong>Niveles de educación según su color</strong></p>
                 <ul class="mb-0">
-                    <li><div class="dark-red"></div> Primaria</li>
-                    <li><div class="blue"></div> Secundaria</li>
+                    <li><div class="dark-red"></div> Universidad</li>
                     <li><div class="yellow"></div> Preparatoria</li>
-                    <li><div class="green"></div> Universidad</li>
+                    <li><div class="green"></div> Secundaria</li>
+                    <li><div class="blue"></div> Primaria</li>
                 </ul>
             </div>
         </div>
     </div>
-</div><!--MAPA----------------------------------------------------------------------------------- -->
-
-
-
+</div><!--ESCALA COLORES----------------------------------------------------------------------------------- -->
 
 
 <!-- Leaflet JS -->
@@ -188,7 +197,6 @@
 
 <!-- Turf -->
 <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
-
 
 </body>
 </html>
