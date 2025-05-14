@@ -41,7 +41,6 @@ app.get('/puntos', async (req, res) => {
 });
 
 
-// Ejemplo en Node.js con Express
 app.get('/poligonos', async (req, res) => {
   try {
     const result = await pool.query(`

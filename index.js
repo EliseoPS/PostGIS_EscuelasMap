@@ -34,7 +34,7 @@ function cargarPuntos(tipo){ //FUNCION PARA CARGAR ESCUELAS SEGUN EL TIPO DE ESC
                 },
                 onEachFeature: (feature, layer) => {
                     layer.on('click', () => {
-                        escuelaSeleccionada = feature; // ← Guarda la escuela clickeada
+                        escuelaSeleccionada = feature; // Guarda la escuela clickeada
                         document.getElementById('infoNombre').textContent = feature.properties.nombre;
                         document.getElementById('infoCategoria').textContent = 'Nivel: ' + (feature.properties.categoria || tipo);
                         document.getElementById('infoAlumnos').textContent = '# de alumnos: ' + (feature.properties.alumnos || 'No especificado');
@@ -86,14 +86,14 @@ function cargarTodosLosPuntos(usandoClustering = false) {
 
 function cargarPoligonos() {
     if (coloniasVisibles) {
-        poligonosLayer.clearLayers(); // Ocultar colonias
+        poligonosLayer.clearLayers();
         coloniasVisibles = false;
     } 
     else {
         fetch('http://localhost:3000/poligonos')
             .then(res => res.json())
             .then(data => {
-                poligonosGeoJSON = data.features; // Guardamos las features para usarlas después
+                poligonosGeoJSON = data.features; 
                 console.log(data);
                 L.geoJSON(data, {
                     style: feature => ({
@@ -106,10 +106,10 @@ function cargarPoligonos() {
                     layer.on('click', () => {
                         coloniaSeleccionada = feature; 
                         document.getElementById('infoNombre').textContent = feature.properties.nombre;
-                        document.getElementById('infoCategoria').textContent = ''; // Vacío
-                        document.getElementById('infoAlumnos').textContent = '';   // Vacío
+                        document.getElementById('infoCategoria').textContent = ''; 
+                        document.getElementById('infoAlumnos').textContent = '';   
                         document.getElementById('infoArea').textContent = 'Área: ' + (feature.properties.area ? `${parseFloat(feature.properties.area).toLocaleString()} m²` : 'No especificada');
-                        document.getElementById('infoElevacion').textContent = ''; // Vacío                        
+                        document.getElementById('infoElevacion').textContent = '';                         
                         document.getElementById('infoPanel').style.display = 'block';
                     });
                 }
@@ -290,7 +290,7 @@ function contarEscuelasEnRadio() {
     document.getElementById('radioLabel').textContent = metros;
 
     const centro = turf.point(escuelaSeleccionada.geometry.coordinates);
-    const radio = metros / 1000; // 0.5 km = 500 metros
+    const radio = metros / 1000; 
     const circuloBuffer = turf.buffer(centro, radio, { units: 'kilometers' });
 
     fetch('http://localhost:3000/puntos')
@@ -308,7 +308,6 @@ function contarEscuelasEnRadio() {
 
             document.getElementById('infoEscuelas500').textContent = `Escuelas en 500m: ${contador}`;
             
-            // Opcional: dibujar el círculo en el mapa
             L.geoJSON(circuloBuffer, {
                 style: {
                     color: 'red',
